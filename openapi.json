@@ -1,0 +1,615 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Reigent API",
+    "version": "1.0.0",
+    "description": "API for managing Rei Agents and chat completions."
+  },
+  "servers": [
+    {
+      "url": "https://api.reigent.ai"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "UserSecretToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "User secret token from Rei Portal"
+      },
+      "AgentSecretToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Rei Agent secret token"
+      }
+    },
+    "schemas": {
+      "ErrorValidation": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" }
+        }
+      },
+      "AgentModel": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "model_name": { "type": "string" }
+        }
+      },
+      "Feature": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "label": { "type": "string" },
+          "isActive": { "type": "boolean" }
+        }
+      },
+      "MessageContentPart": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["text", "image_url", "file", "file_url"]
+          },
+          "text": {
+            "type": "string",
+            "description": "Text content (required when type is 'text')"
+          },
+          "image_url": {
+            "type": "object",
+            "properties": {
+              "url": { "type": "string" }
+            },
+            "required": ["url"]
+          },
+          "file": {
+            "type": "object",
+            "properties": {
+              "filename": { "type": "string" },
+              "file_data": { "type": "string" }
+            },
+            "required": ["filename", "file_data"]
+          },
+          "file_url": { "type": "string" }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["system", "user", "assistant", "tool"]
+          },
+          "content": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/MessageContentPart" }
+              }
+            ]
+          },
+          "name": { "type": "string" },
+          "tool_call_id": { "type": "string" },
+          "tool_calls": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ToolCall" }
+          }
+        }
+      },
+      "ToolCall": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string", "enum": ["function"] },
+          "function": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "arguments": { "type": "string" }
+            }
+          }
+        }
+      },
+      "Tool": {
+        "type": "object",
+        "required": ["type", "function"],
+        "properties": {
+          "type": { "type": "string", "enum": ["function"] },
+          "function": {
+            "type": "object",
+            "required": ["name", "parameters"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "parameters": { "type": "object" },
+              "strict": { "type": "boolean" }
+            }
+          }
+        }
+      },
+      "ResponseFormat": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["text", "json_object", "json_schema"]
+          },
+          "json_schema": {
+            "type": "object",
+            "required": ["name", "schema"],
+            "properties": {
+              "name": { "type": "string" },
+              "strict": { "type": "boolean", "default": false },
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string" },
+                  "properties": { "type": "object" },
+                  "required": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "additionalProperties": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ChatChoice": {
+        "type": "object",
+        "properties": {
+          "index": { "type": "integer" },
+          "message": {
+            "type": "object",
+            "properties": {
+              "role": { "type": "string" },
+              "content": { "type": "string" },
+              "tool_calls": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/ToolCall" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/v1/accounts/units": {
+      "post": {
+        "summary": "Agent Creation",
+        "description": "Create a Rei Agent using the user's secret token.",
+        "tags": ["Agent Management"],
+        "security": [{ "UserSecretToken": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["agentModel", "tag", "behaviourPrompt"],
+                "properties": {
+                  "agentModel": {
+                    "type": "string",
+                    "enum": ["google/gemini-2.5-flash"],
+                    "description": "The model to use for the agent"
+                  },
+                  "tag": {
+                    "type": "string",
+                    "description": "Tag to identify your unit"
+                  },
+                  "behaviourPrompt": {
+                    "type": "string",
+                    "description": "The behaviour prompt for the agent"
+                  },
+                  "temperature": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "maxTokens": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2000000
+                  },
+                  "responseFormat": {
+                    "type": "string",
+                    "enum": ["text", "json", "markdown", "html"]
+                  },
+                  "color": {
+                    "type": "string",
+                    "description": "Color code in Hex format",
+                    "example": "#FFFFFF",
+                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Agent created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "secretToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation Error" },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "put": {
+        "summary": "Agent Update",
+        "description": "Update an existing Rei Agent using the user's secret token.",
+        "tags": ["Agent Management"],
+        "security": [{ "UserSecretToken": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["agentKey"],
+                "properties": {
+                  "agentKey": { "type": "string" },
+                  "tag": {
+                    "type": "string",
+                    "description": "Tag to identify your unit"
+                  },
+                  "behaviourPrompt": {
+                    "type": "string",
+                    "description": "Agent's behaviour prompt"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Agent's description"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Agent updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "updated": { "type": "string", "example": "true" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation Error" },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "delete": {
+        "summary": "Agent Deletion",
+        "description": "Delete a Rei Agent using the user's secret token.",
+        "tags": ["Agent Management"],
+        "security": [{ "UserSecretToken": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["agentKey"],
+                "properties": {
+                  "agentKey": {
+                    "type": "string",
+                    "description": "rei-agent-secret-token from Rei Portal"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Success" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "User Agent not found" }
+        }
+      }
+    },
+    "/v1/accounts/units/clone": {
+      "post": {
+        "summary": "Agent Cloning",
+        "description": "Clone an existing Rei Agent using the user's secret token.",
+        "tags": ["Agent Management"],
+        "security": [{ "UserSecretToken": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["agentId"],
+                "properties": {
+                  "agentId": {
+                    "type": "string",
+                    "description": "rei_agent_id from the Get Agent API"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Agent cloned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isCloneSuccess": { "type": "boolean" },
+                    "secretToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "User Agent not found" }
+        }
+      }
+    },
+    "/v1/agents": {
+      "get": {
+        "summary": "Get Reigent",
+        "description": "Retrieve a Reigent Unit.",
+        "tags": ["Agent"],
+        "security": [{ "AgentSecretToken": [] }],
+        "responses": {
+          "200": {
+            "description": "Agent details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "agent_functionalities": { "type": "string" },
+                    "agent_model": { "$ref": "#/components/schemas/AgentModel" },
+                    "response_format": { "type": "string" },
+                    "temperature": { "type": "number" },
+                    "max_tokens": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Agent not found" }
+        }
+      }
+    },
+    "/v1/agents/tools": {
+      "get": {
+        "summary": "Get Reigent Unit's Tools",
+        "description": "Retrieve the tools available for a Reigent Unit.",
+        "tags": ["Agent"],
+        "security": [{ "AgentSecretToken": [] }],
+        "responses": {
+          "200": {
+            "description": "List of agent tools",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "features": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Feature" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "put": {
+        "summary": "Update Reigent Unit's Tools",
+        "description": "Update the activation status of a tool for a Reigent Unit.",
+        "tags": ["Agent"],
+        "security": [{ "AgentSecretToken": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["key", "isActive"],
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "enum": [
+                      "crypto",
+                      "crypto:laevitas",
+                      "apex_chart",
+                      "image_gen",
+                      "skip_web_search"
+                    ],
+                    "description": "Tool key. Retrieve the latest values from Get Reigent Unit's Tools."
+                  },
+                  "isActive": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tool updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isUpdated": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation Error" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/v1/chat/completions": {
+      "post": {
+        "summary": "Chat Completion",
+        "description": "Chat completion by Reigent.",
+        "tags": ["Chat"],
+        "security": [{ "AgentSecretToken": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["messages"],
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "enum": ["google/gemini-2.5-flash"],
+                    "description": "Model to use. Defaults to agent's configured model."
+                  },
+                  "messages": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "$ref": "#/components/schemas/Message" }
+                  },
+                  "temperature": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 2,
+                    "default": 1
+                  },
+                  "max_tokens": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "top_p": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "n": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "seed": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "stream": { "type": "boolean" },
+                  "stop": {
+                    "oneOf": [
+                      { "type": "string" },
+                      { "type": "array", "items": { "type": "string" } }
+                    ]
+                  },
+                  "presence_penalty": {
+                    "type": "number",
+                    "minimum": -2.0,
+                    "maximum": 2.0
+                  },
+                  "frequency_penalty": {
+                    "type": "number",
+                    "minimum": -2.0,
+                    "maximum": 2.0
+                  },
+                  "logit_bias": {
+                    "type": "object",
+                    "description": "Token IDs as string keys, values between -100 and 100",
+                    "additionalProperties": {
+                      "type": "number",
+                      "minimum": -100,
+                      "maximum": 100
+                    }
+                  },
+                  "logprobs": { "type": "boolean" },
+                  "top_logprobs": { "type": "number" },
+                  "user": { "type": "string" },
+                  "response_format": { "$ref": "#/components/schemas/ResponseFormat" },
+                  "tools": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/Tool" }
+                  },
+                  "tool_choice": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": ["none", "auto"]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": { "type": "string", "enum": ["function"] },
+                          "function": {
+                            "type": "object",
+                            "properties": {
+                              "name": { "type": "string" }
+                            },
+                            "required": ["name"]
+                          }
+                        },
+                        "required": ["type", "function"]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat completion response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "choices": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/ChatChoice" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation Error" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Agent not found" }
+        }
+      }
+    }
+  }
+}

@@ -1,122 +1,123 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Rei - Docs",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#292a2d",
+    "light": "#25c2a0",
+    "dark": "#292a2d"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/static/img/favicon.ico",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "API & SDK",
+            "root": "docs/api-and-sdk/index",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "docs/api-and-sdk/quickstart",
+              "docs/api-and-sdk/sdk",
+              "docs/api-and-sdk/integration-with-existing-agents",
+              "docs/api-and-sdk/integration-with-existing-services"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Core",
+            "root": "docs/agentic-core/index",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "docs/core/core-standalone",
+              "docs/application-usecases/index"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Factory",
+            "root": "docs/factory/index",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "docs/factory/reigent-factory/reigent-factory",
+              {
+                "group": "Capabilities",
+                "root": "docs/factory/capabilities/index",
+                "pages": [
+                  "docs/factory/capabilities/research",
+                  "docs/factory/capabilities/custom-tools"
+                ]
+              }
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Guides",
+            "root": "docs/guides/index",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "docs/guides/unit-usage-guide",
+              "docs/guides/sandbox-guide",
+              "docs/guides/unit-api-guide",
+              "docs/guides/cursor-guide"
             ]
+          },
+          {
+            "group": "Tokenomics",
+            "root": "docs/tokenomics/index",
+            "pages": ["docs/tokenomics/ecosystem-operations-and-business-model"]
+          },
+          {
+            "group": "Catalog",
+            "root": "docs/catalog/index",
+            "pages": ["docs/catalog/hanabi-1"]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
+            "group": "Endpoints",
+            "openapi": "openapi.json"
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/0xReisearch"
+    },
+    {
+      "name": "Telegram",
+      "icon": "telegram",
+      "url": "https://t.me/reiportal"
+    }
+  ],
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/static/img/logo-rei-dark.svg",
+    "dark": "/static/img/logo-rei-dark.svg"
   },
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Twitter",
+        "href": "https://x.com/rei_labs"
+      },
+      {
+        "label": "Discord",
+        "href": "https://discord.com/invite/reilabs"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Reigent Portal",
+      "href": "https://app.reilabs.org/"
     }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "twitter": "https://x.com/rei_labs",
+      "github": "https://github.com/0xReisearch",
+      "discord": "https://discord.com/invite/reilabs",
+      "telegram": "https://t.me/reiportal"
     }
   }
 }
