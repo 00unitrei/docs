@@ -10,98 +10,90 @@ The Reigent API is a powerful interface designed to interact with the Reigent, e
 
 To authenticate the REI Agent API requests
 
-<details>
-<summary><strong>❓ How to get a Rei Agent API Key</strong></summary>
+<AccordionGroup>
+  <Accordion title="How to get a Rei Agent API Key" icon="circle-question">
+    #### Steps
 
-#### **Steps**
+    1. Navigate to [Reigent Portal](https://app.reilabs.org/)
 
-1. Navigate to [Reigent Portal](https://app.reilabs.org/)
+    2. Create an agent as stated in the Reigent Portal.
 
-2. Create an agent as stated in the Reigent Portal.
+    3. Find the agent from the side bar at the left.
 
-3. Find the agent from the side bar at the left.
+    4. Click `...`˝
 
-4. Click `...`
+    5. Click `Agent Details`
 
-5. Click `Agent Details`
+    6. Locate your Agent `Secret Key` from the pop-out dialog.
+       ![Agent Secret Key pop-out dialog](../intro-rei-secret-view.png)
 
-6. Locate your Agent `Secret Key` from the pop-out dialog.
-   ![Agent Secret Key pop-out dialog](../intro-rei-secret-view.png).
+    7. Copy.
 
-7. Copy.
+    - Treat this key as highly sensitive—it grants full API access.
+    - Never expose it in client-side code or version control (e.g., Git).
 
-- Treat this key as highly sensitive—it grants full API access.
-- ❗ Never expose it in client-side code or version control (e.g., Git).
+    8. Key rotation
 
-8. Key rotation
+    - You may regenerate the Secret Key if is needed.
+    - Only the latest generated Secret Key is valid.
+  </Accordion>
 
-- You may regenerate the Secret Key if is needed.
-- Only the latest generated Secret Key is valid.
+  <Accordion title="How to use Rei Agent API Key" icon="wrench">
+    **Example:**
 
-</details>
-
-<details>
-<summary><strong>🔧 How to use User API Key</strong></summary>
-
-**Example:**
-
-```http
-GET /v1/{...} HTTP/1.1
-Authorization: Bearer YOUR_REIGENT_UNIT_SECRET_KEY
-```
-
-</details>
+    ```http
+    GET /v1/{...} HTTP/1.1
+    Authorization: Bearer YOUR_REIGENT_UNIT_SECRET_KEY
+    ```
+  </Accordion>
+</AccordionGroup>
 
 ### User API Key
 
 To manage resources
 
-<details>
-<summary><strong>❓ How to get a User API Key</strong></summary>
+<AccordionGroup>
+  <Accordion title="How to get a User API Key" icon="circle-question">
+    #### Steps
 
-#### **Steps**
+    1. Navigate to [Reigent Portal](https://app.reilabs.org/)
 
-1. Navigate to [Reigent Portal](https://app.reilabs.org/)
+    2. Create an agent as stated in the Reigent Portal.
 
-2. Create an agent as stated in the Reigent Portal.
+    3. Click on three dots next to the `Create`.
 
-3. Click on three dots next to the `Create`.
+       ![Top right bar of Reigent Portal](../intro-user-secret-view.png)
 
-   ![Top right bar of Reigent Portal](../intro-user-secret-view.png)
+    4. Click `View API`.
 
-4. Click `View API`.
+       ![User API Key pop-out dialog](../intro-user-secret-view-2.png)
 
-   ![User API Key pop-out dialog](../intro-user-secret-view-2.png)
+    5. Locate your `User Secret Key` from the pop-out dialog.
 
-5. Locate your `User Secret Key` from the pop-out dialog.
+       ![User API Key pop-out dialog](../intro-user-secret-view-3.png)
 
-   ![User API Key pop-out dialog](../intro-user-secret-view-3.png)
+    6. Turn the key to `Active`
 
-6. Turn the key to `Active`
+    7. Copy.
 
-7. Copy.
+    - Treat this key as highly sensitive—it grants full API access.
+    - Never expose it in client-side code or version control (e.g., Git).
 
-- Treat this key as highly sensitive—it grants full API access.
-- ❗ Never expose it in client-side code or version control (e.g., Git).
+    8. Key rotation
 
-8. Key rotation
+    - You may regenerate the User Secret Key if is needed.
+    - Only the latest generated User Secret Key is valid.
+  </Accordion>
 
-- You may regenerate the User Secret Key if is needed.
-- Only the latest generated User Secret Key is valid.
+  <Accordion title="How to use User API Key" icon="wrench">
+    **Example:**
 
-</details>
-
-<details>
-<summary><strong>🔧 How to use User API Key</strong></summary>
-
-**Example:**
-
-```http
-GET /v1/{...} HTTP/1.1
-Authorization: Bearer YOUR_USER_SECRET_KEY
-```
-
-</details>
+    ```http
+    GET /v1/{...} HTTP/1.1
+    Authorization: Bearer YOUR_USER_SECRET_KEY
+    ```
+  </Accordion>
+</AccordionGroup>
 
 ## Base URL
 

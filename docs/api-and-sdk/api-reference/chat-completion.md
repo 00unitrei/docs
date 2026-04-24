@@ -27,62 +27,57 @@ Chat completion by Reigent.
 
   **messages** `array` (min length: 1) Required
 
-     <details>
-   <summary>Show message structure</summary>
+  <Accordion title="Show message structure">
+    Each message object contains:
 
-  Each message object contains:
+    **role** `string` Required  
+     The role of the message author.  
+     _Allowed values: `"system"`, `"user"`, `"assistant"`, `"tool"`_
 
-  **role** `string` Required  
-   The role of the message author.  
-   _Allowed values: `"system"`, `"user"`, `"assistant"`, `"tool"`_
+    **content** `string` or `array` Required  
+     The contents of the message. Can be:
+    - Simple text string
+    - Array of content parts (for multimodal inputs)
 
-  **content** `string` or `array` Required  
-   The contents of the message. Can be:
-  - Simple text string
-  - Array of content parts (for multimodal inputs)
+    <Accordion title="Show content parts structure">
+      Each content part object contains:
 
-   <details>
-   <summary>Show content parts structure</summary>
+      **type** `string` Required  
+       The type of content part.  
+       _Allowed values: `"text"`, `"image_url"`, `"file"`, `"file_url"`_
 
-  Each content part object contains:
+      **text** `string` Conditional  
+       Text content (required when type is `"text"`)
 
-  **type** `string` Required  
-   The type of content part.  
-   _Allowed values: `"text"`, `"image_url"`, `"file"`, `"file_url"`_
+      **image_url** `object` Conditional  
+       Image URL details (required when type is `"image_url"`)  
+       _Contains:_
+      - **url** `string` Required  
+        The URL of the image
 
-  **text** `string` Conditional  
-   Text content (required when type is `"text"`)
+      <br/>
+      **file** `object` Conditional  
+       File details (required when type is `"file"`)  
+       _Contains:_
+      - **filename** `string` Required  
+        The name of the file
+      - **file_data** `string` Required  
+        The buffer content of the file
 
-  **image_url** `object` Conditional  
-   Image URL details (required when type is `"image_url"`)  
-   _Contains:_
-  - **url** `string` Required  
-    The URL of the image
+      <br/>
+      **file_url** `string` Conditional  
+       The URL of the file (required when type is `"file_url"`)
+    </Accordion>
 
-  <br/>
-  **file** `object` Conditional  
-   File details (required when type is `"file"`)  
-   _Contains:_
-  - **filename** `string` Required  
-    The name of the file
-  - **file_data** `string` Required  
-    The buffer content of the file
+    **name** `string` Optional  
+     An optional name for the participant
 
-  <br/>
-  **file_url** `string` Conditional  
-   The URL of the file (required when type is `"file_url"`)  
-  </details>
+    **tool_call_id** `string` Optional  
+     Required when role is `"tool"`
 
-  **name** `string` Optional  
-   An optional name for the participant
-
-  **tool_call_id** `string` Optional  
-   Required when role is `"tool"`
-
-  **tool_calls** `array` Optional  
-   Tool calls made by the assistant
-
-   </details>
+    **tool_calls** `array` Optional  
+     Tool calls made by the assistant
+  </Accordion>
 
   ***
 
@@ -160,57 +155,51 @@ Chat completion by Reigent.
 
   Specifies the format of the model's output. Use this to request structured responses.
 
-   <details>
-   <summary>Show response_format structure</summary>
+  <Accordion title="Show response_format structure">
+    **type** `string` Required
+    The type of response format.
+    _Allowed values: `"text"`, `"json_object"`, `"json_schema"`_
+    - `"text"` - Standard text response (default)
+    - `"json_object"` - Response will be valid JSON
+    - `"json_schema"` - Response will conform to a specified JSON schema
 
-  **type** `string` Required
-  The type of response format.
-  _Allowed values: `"text"`, `"json_object"`, `"json_schema"`_
-  - `"text"` - Standard text response (default)
-  - `"json_object"` - Response will be valid JSON
-  - `"json_schema"` - Response will conform to a specified JSON schema
+    **json_schema** `object` Conditional
+    Schema definition (required when type is `"json_schema"`)
+    _Contains:_
+    - **name** `string` Required
+      The name of the schema
 
-  **json_schema** `object` Conditional
-  Schema definition (required when type is `"json_schema"`)
-  _Contains:_
-  - **name** `string` Required
-    The name of the schema
+    - **strict** `boolean` Optional
+      Whether to enforce strict schema adherence. Default: `false`
 
-  - **strict** `boolean` Optional
-    Whether to enforce strict schema adherence. Default: `false`
-
-  - **schema** `object` Required
-    JSON Schema definition with:
-    - **type** `string` - Schema type (e.g., `"object"`)
-    - **properties** `object` - Property definitions
-    - **required** `array` - Required property names
-    - **additionalProperties** `boolean` - Allow extra properties
-
-   </details>
+    - **schema** `object` Required
+      JSON Schema definition with:
+      - **type** `string` - Schema type (e.g., `"object"`)
+      - **properties** `object` - Property definitions
+      - **required** `array` - Required property names
+      - **additionalProperties** `boolean` - Allow extra properties
+  </Accordion>
 
   ***
 
   **tools** `array` Optional  
    A list of tools the model may call
 
-   <details>
-   <summary>Show tool structure</summary>
+  <Accordion title="Show tool structure">
+    Each tool object contains:
 
-  Each tool object contains:
+    **type** `string` Required  
+     _Must be: `"function"`_
 
-  **type** `string` Required  
-   _Must be: `"function"`_
+    **function** `object` Required  
+     The function definition
 
-  **function** `object` Required  
-   The function definition
+    **function.name** `string` Required  
+     The name of the function
 
-  **function.name** `string` Required  
-   The name of the function
-
-  **function.parameters** `object` Required  
-   The parameters the function accepts
-
-   </details>
+    **function.parameters** `object` Required  
+     The parameters the function accepts
+  </Accordion>
 
   ***
 
@@ -233,212 +222,195 @@ Chat completion by Reigent.
 - **Sample Request**
 
 1. **Type: Text**
-<details>
-<summary>Show sample</summary>
 
-```json
-{
-    "messages": [
-        {
-            "role": "user",
-            "content": "Hello, can you help me with my research?"
-        }
-    ],
-    "tools": [
-        {
-            "type": "function",
-            "function": {
-                "name": "get_weather",
-                "description": "Get current temperature of given location",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "location": {
-                            "type": "string",
-                            "description": "City and country (e.g. Paris, France)"
-                        }
-                    },
-                    "required": ["location"],
-                    "additionalProperties": false
-                },
-                "strict": true
-            }
-        }
-    ]
-};
-```
-
-  </details>
+<Accordion title="Show sample">
+  ```json
+  {
+      "messages": [
+          {
+              "role": "user",
+              "content": "Hello, can you help me with my research?"
+          }
+      ],
+      "tools": [
+          {
+              "type": "function",
+              "function": {
+                  "name": "get_weather",
+                  "description": "Get current temperature of given location",
+                  "parameters": {
+                      "type": "object",
+                      "properties": {
+                          "location": {
+                              "type": "string",
+                              "description": "City and country (e.g. Paris, France)"
+                          }
+                      },
+                      "required": ["location"],
+                      "additionalProperties": false
+                  },
+                  "strict": true
+              }
+          }
+      ]
+  };
+  ```
+</Accordion>
 
 2. **Type: Image (in URL)**
 
-<details>
-<summary>Show sample</summary>
-
-```json
-{
-    "messages": [
-        {
-            "role": "user",
-            "content": [
-              {
-                "type": "text",
-                "text": "Hello, can you help me with my research?"
-              },
-              {
-                "type": "image_url",
-                "image_url": {
-                  "url": "https://test.png"
-                }
-              },
-            ]
-        }
-    ],
-    "tools": []
-};
-```
-
-  </details>
+<Accordion title="Show sample">
+  ```json
+  {
+      "messages": [
+          {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello, can you help me with my research?"
+                },
+                {
+                  "type": "image_url",
+                  "image_url": {
+                    "url": "https://test.png"
+                  }
+                },
+              ]
+          }
+      ],
+      "tools": []
+  };
+  ```
+</Accordion>
 
 3. **Type: Image (in Base64)**
 
-<details>
-<summary>Show sample</summary>
-
-```json
-{
-    "messages": [
-        {
-            "role": "user",
-            "content": [
-              {
-                "type": "text",
-                "text": "Hello, can you help me with my research?"
-              },
-              {
-                "type": "image_url",
-                "image_url": {
-                  "url": "data:image/png;base64,iV..."
-                }
-              },
-            ]
-        }
-    ],
-    "tools": []
-};
-```
-
-  </details>
+<Accordion title="Show sample">
+  ```json
+  {
+      "messages": [
+          {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello, can you help me with my research?"
+                },
+                {
+                  "type": "image_url",
+                  "image_url": {
+                    "url": "data:image/png;base64,iV..."
+                  }
+                },
+              ]
+          }
+      ],
+      "tools": []
+  };
+  ```
+</Accordion>
 
 4. **Type: Docs (PDF)**
 
-<details>
-<summary>Show sample</summary>
-
-```json
-{
-    "messages": [
-        {
-            "role": "user",
-            "content": [
-              {
-                "type": "text",
-                "text": "Hello, what's inside the PDF?"
-              },
-              {
-                "type": "file",
-                "file": {
-                  "filename": "Sample File Name",
-                  "file_data": "data:application/pdf;base64,JVBERi0xLjMNCiXi48/....",
+<Accordion title="Show sample">
+  ```json
+  {
+      "messages": [
+          {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello, what's inside the PDF?"
+                },
+                {
+                  "type": "file",
+                  "file": {
+                    "filename": "Sample File Name",
+                    "file_data": "data:application/pdf;base64,JVBERi0xLjMNCiXi48/....",
+                  }
                 }
-              }
-            ]
-        }
-    ],
-    "tools": []
-};
-```
-
-  </details>
+              ]
+          }
+      ],
+      "tools": []
+  };
+  ```
+</Accordion>
 
 5. **Type: Docs**
 
 - Supported File Types: - `json`, `xlsx`, `xlsm`, `csv`, `md`, `pptx`, `docx`, `txt`
 
-<details>
-<summary>Show sample</summary>
-
-```json
-{
-    "messages": [
-        {
-            "role": "user",
-            "content": [
-              {
-                "type": "text",
-                "text": "Hello, what's inside the PDF?"
-              },
-              {
-                "type": "input_file",
-                "file_url": "https://file_url",
-              }
-            ]
-        }
-    ],
-    "tools": []
-};
-```
-
-  </details>
+<Accordion title="Show sample">
+  ```json
+  {
+      "messages": [
+          {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello, what's inside the PDF?"
+                },
+                {
+                  "type": "input_file",
+                  "file_url": "https://file_url",
+                }
+              ]
+          }
+      ],
+      "tools": []
+  };
+  ```
+</Accordion>
 
 6. **Type: JSON Schema Response**
 
-<details>
-<summary>Show sample</summary>
-
-```json
-{
-  "model": "google/gemini-2.5-flash",
-  "messages": [
-    {
-      "role": "user",
-      "content": "Tell me about a cat named Whiskers. Return the response as a JSON object with the following fields: 'name' (string), 'color' (string - the cat's fur color), 'age' (integer - in years), and 'personality' (string - brief description). Make sure to include all required fields."
-    }
-  ],
-  "response_format": {
-    "type": "json_schema",
-    "json_schema": {
-      "name": "cat_info",
-      "strict": true,
-      "schema": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "The cat's name"
+<Accordion title="Show sample">
+  ```json
+  {
+    "model": "google/gemini-2.5-flash",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Tell me about a cat named Whiskers. Return the response as a JSON object with the following fields: 'name' (string), 'color' (string - the cat's fur color), 'age' (integer - in years), and 'personality' (string - brief description). Make sure to include all required fields."
+      }
+    ],
+    "response_format": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "cat_info",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The cat's name"
+            },
+            "color": {
+              "type": "string",
+              "description": "The cat's fur color"
+            },
+            "age": {
+              "type": "integer",
+              "description": "The cat's age in years"
+            },
+            "personality": {
+              "type": "string",
+              "description": "Brief description of the cat's personality"
+            }
           },
-          "color": {
-            "type": "string",
-            "description": "The cat's fur color"
-          },
-          "age": {
-            "type": "integer",
-            "description": "The cat's age in years"
-          },
-          "personality": {
-            "type": "string",
-            "description": "Brief description of the cat's personality"
-          }
-        },
-        "required": ["name", "color", "age", "personality"],
-        "additionalProperties": false
+          "required": ["name", "color", "age", "personality"],
+          "additionalProperties": false
+        }
       }
     }
   }
-}
-```
-
-  </details>
+  ```
+</Accordion>
 
 ---
 
@@ -446,76 +418,67 @@ Chat completion by Reigent.
 
 1. **Without Tools**
 
-<details>
-<summary>Show sample</summary>
-
-```json
-{
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "content": "Hello! How can I assist you today?",
-        "role": "assistant"
+<Accordion title="Show sample">
+  ```json
+  {
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "content": "Hello! How can I assist you today?",
+          "role": "assistant"
+        }
       }
-    }
-  ]
-}
-```
-
-  </details>
+    ]
+  }
+  ```
+</Accordion>
 
 2. **With Tools**
 
-<details>
-<summary>Show sample</summary>
-
-```json
-{
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "content": "",
-        "role": "assistant",
-        "tool_calls": [
-          {
-            "id": "call_zSIBPi4QKxjkpAewfi5YbTnI",
-            "type": "function",
-            "function": {
-              "name": "get_weather",
-              "arguments": "{\"location\":\"Paris, France\"}"
+<Accordion title="Show sample">
+  ```json
+  {
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "content": "",
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "id": "call_zSIBPi4QKxjkpAewfi5YbTnI",
+              "type": "function",
+              "function": {
+                "name": "get_weather",
+                "arguments": "{\"location\":\"Paris, France\"}"
+              }
             }
-          }
-        ]
+          ]
+        }
       }
-    }
-  ]
-}
-```
-
-  </details>
+    ]
+  }
+  ```
+</Accordion>
 
 3. **With JSON Schema**
 
-<details>
-<summary>Show sample</summary>
-
-```json
-{
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "content": "{\"name\":\"Whiskers\",\"color\":\"orange tabby\",\"age\":3,\"personality\":\"Playful and curious, loves to explore and cuddle\"}",
-        "role": "assistant"
+<Accordion title="Show sample">
+  ```json
+  {
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "content": "{\"name\":\"Whiskers\",\"color\":\"orange tabby\",\"age\":3,\"personality\":\"Playful and curious, loves to explore and cuddle\"}",
+          "role": "assistant"
+        }
       }
-    }
-  ]
-}
-```
-
-  </details>
+    ]
+  }
+  ```
+</Accordion>
 
 ---
 
